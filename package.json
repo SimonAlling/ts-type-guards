@@ -34,10 +34,9 @@
   "bugs": {
     "url": "https://github.com/simonalling/ts-type-guards"
   },
-  "main": "dist/ts-type-guards.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -p .",
-    "release": "npm run build && npm version patch && git push --tags && npm publish"
+    "build": "tsc -p ."
   },
   "devDependencies": {
     "typescript": "^2.5.3"
