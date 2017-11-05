@@ -1,6 +1,6 @@
 {
   "name": "ts-type-guards",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Curried TypeScript type guards for primitive types and classes",
   "keywords": [
     "TypeScript",
