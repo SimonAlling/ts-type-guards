@@ -1,0 +1,45 @@
+{
+  "name": "ts-type-guards",
+  "version": "0.1.2",
+  "description": "Curried TypeScript type guards for primitive types and classes",
+  "keywords": [
+    "TypeScript",
+    "type guards",
+    "type",
+    "guard",
+    "isBoolean",
+    "isNumber",
+    "isString",
+    "isSymbol",
+    "isNull",
+    "isUndefined",
+    "isPrimitive",
+    "isNonPrimitive",
+    "is",
+    "isLike",
+    "isArrayOf",
+    "only"
+  ],
+  "author": {
+    "name": "Simon Alling",
+    "email": "alling@dtek.se",
+    "url": "https://simonalling.se"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/simonalling/ts-type-guards",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simonalling/ts-type-guards"
+  },
+  "bugs": {
+    "url": "https://github.com/simonalling/ts-type-guards"
+  },
+  "main": "dist/ts-type-guards.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "release": "npm run build && npm version patch && git push --tags && npm publish"
+  },
+  "devDependencies": {
+    "typescript": "^2.5.3"
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "es6"
+        ],
+        "sourceMap": true,
+        "target": "es6",
+        "declaration": true,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "module": "CommonJS",
+		"moduleResolution": "node",
+        "outDir": "dist",
+        "preserveConstEnums": true
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}
