@@ -35,6 +35,7 @@
     "url": "https://github.com/simonalling/ts-type-guards"
   },
   "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p ."
   },
