@@ -8,8 +8,8 @@
         "declaration": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
-        "module": "CommonJS",
-		"moduleResolution": "node",
+        "module": "ES6",
+        "moduleResolution": "node",
         "outDir": "dist",
         "preserveConstEnums": true
     },
