@@ -132,5 +132,5 @@ export function isLike<T>(reference: T): TypeGuard<T> {
             throw new TypeError(isLike.name + ` cannot use this object as reference because it has no constructor: ` + JSON.stringify(reference));
         }
     }
-   	return typeGuard;
+    return typeGuard;
 }

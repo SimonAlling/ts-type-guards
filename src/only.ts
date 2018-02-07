@@ -38,5 +38,5 @@ export function only<T>(type: Classy<T>): (xs: any[]) => T[] {
 }
 
 export function onlyLike<T>(reference: T): (xs: any[]) => T[] {
-	return (xs: any[]): T[] => xs.filter(isLike(reference));
+    return (xs: any[]): T[] => xs.filter(isLike(reference));
 }
