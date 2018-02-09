@@ -130,7 +130,7 @@ if (isFoo(x)) {
     x.baz();
 }
 
-xs.filter(isFoo).forEach(baz);
+xs.filter(isFoo).forEach(x => x.baz());
 ```
 
 
