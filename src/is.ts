@@ -109,28 +109,17 @@ export function is<T>(type: Classy<T>): TypeGuard<T> {
  * @return A type guard which returns `true` iff its argument is of the same type as `reference` or is an instance of that type.
  */
 export function isLike<T>(reference: T): TypeGuard<T> {
-    // This is necessary to please the TS compiler, which complains that "type 'null' is not assignable to type T" etc if each `if` block has its own return statement.
-    let typeGuard; // cannot have explicit type for the same reason
-    if (is(Array)(reference)) {
-        typeGuard = (x: any): x is T => reference.length > 0 ? x.every(isLike(reference[0])) : true;
-    } else if (isNull(reference)) {
-        typeGuard = isNull;
-    } else if (isUndefined(reference)) {
-        typeGuard = isUndefined;
-    } else if (isBoolean(reference)) {
-        typeGuard = isBoolean;
-    } else if (isNumber(reference)) {
-        typeGuard = isNumber;
-    } else if (isString(reference)) {
-        typeGuard = isString;
-    } else if (isSymbol(reference)) {
-        typeGuard = isSymbol;
-    } else {
-        if (reference.constructor instanceof Function) {
-            typeGuard = is<T>(reference.constructor);
-        } else {
-            throw new TypeError(isLike.name + ` cannot use this object as reference because it has no constructor: ` + JSON.stringify(reference));
+    for (const f of TYPE_GUARDS_PRIMITIVE) {
+        if (f(reference)) {
+            // This eta abstraction is necessary to please the typechecker, which otherwise complains that "type 'boolean' is not assignable to type 'T'" etc.
+            return (x: any): x is T => f(x);
         }
     }
-    return typeGuard;
+    if (is(Array)(reference)) {
+        return (x: any): x is T => reference.length > 0 ? x.every(isLike(reference[0])) : true;
+    }
+    if (reference.constructor instanceof Function) {
+        return is<T>(reference.constructor);
+    }
+    throw new TypeError(isLike.name + ` cannot use this object as reference because it has no constructor: ` + JSON.stringify(reference));
 }
