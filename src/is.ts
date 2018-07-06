@@ -96,7 +96,7 @@ function namedTypeGuard<T>(creator: Function, type: Classy<T>, typeGuard: TypeGu
 export function is<T>(type: Classy<T>): TypeGuard<T> {
     // Useful mainly in the absence of strictNullChecks:
     if (isPrimitive(type)) {
-        throw new TypeError(`${type} cannot be used as a type in the is() function.`);
+        throw new TypeError(`${type.name} cannot be used as a type in the is() function.`);
     }
     return namedTypeGuard(is, type, (x: any): x is T => x instanceof type);
 }
