@@ -8,7 +8,7 @@
         "declaration": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
-        "module": "ES6",
+        "module": "commonjs",
         "moduleResolution": "node",
         "outDir": "dist",
         "preserveConstEnums": true
