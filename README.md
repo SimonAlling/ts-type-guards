@@ -65,9 +65,11 @@ function getFromLocalStorage<T>(key: string, fallback: T): T {
         return fallback;
     }
     const parsed: any = JSON.parse(saved);
-    return isLike(fallback)(parsed)
-           ? parsed // parsed is like fallback, so it is a T!
-           : fallback; // parsed has wrong type, so return fallback.
+    return (
+        isLike(fallback)(parsed)
+        ? parsed // parsed is like fallback, so it is a T!
+        : fallback // parsed has wrong type, so return fallback.
+    );
 }
 
 getFromLocalStorage("volume", 50); // Guaranteed to be a number.
