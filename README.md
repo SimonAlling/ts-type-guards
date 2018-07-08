@@ -16,9 +16,9 @@ npm install ts-type-guards --save
 
 
 
-## Usage examples
+## Usage Examples
 
-### Basic usage
+### Basic Usage
 
 ```javascript
 import { is } from "ts-type-guards";
@@ -51,7 +51,7 @@ const srcs = fooImages.map(img => img.src); // Compiles and runs safely.
 ```
 
 
-### Checking against another value
+### Checking Against Another Value
 
 Use `isLike` to check if something is of the same type as a reference value:
 
@@ -104,7 +104,7 @@ isLike(nala)(someone);  // false
 ```
 
 
-### Primitive types
+### Primitive Types
 
 `is` can only handle classy types, so the primitive ones have their own type guards:
 
@@ -121,7 +121,7 @@ isLike(null)(undefined); // false
 ```
 
 
-### Reusing type guards
+### Reusing Type Guards
 
 Although it may seem clunky to have to write `is(x)(y)` instead of `is(x, y)`, this is a design choice based on the fact that partial application is so awesome. Not only does it get rid of `xs.filter(x => is(T, x))` in favor of `xs.filter(is(T))`, it also lets you save and reuse type guards:
 
