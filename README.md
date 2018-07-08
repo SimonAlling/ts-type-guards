@@ -151,15 +151,6 @@ isArrayOf(Error)([
 
 
 
-## Release History
-
-* 0.2.0
-    * ES6 modules instead of CommonJS.
-* 0.1.0
-    * Usable beta.
-
-
-
 ## Contributing
 
 1. [Fork the repo](https://github.com/SimonAlling/ts-type-guards/fork).
