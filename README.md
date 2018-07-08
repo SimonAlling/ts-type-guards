@@ -4,7 +4,7 @@
 [![NPM Version][npm-image]][npm-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 
-Simplifies typechecking by providing typeguards to check if something is of a certain type or of the same type as something else. Includes tailor-made typeguards for the primitive types and a general one for "classy" types.
+Simplifies typechecking by providing type guards to check if something is of a certain type or of the same type as something else. Includes tailor-made type guards for the primitive types and a general one for "classy" types.
 
 
 
@@ -106,7 +106,7 @@ isLike(nala)(someone);  // false
 
 ### Primitive types
 
-`is` can only handle classy types, so the primitive ones have their own typeguards:
+`is` can only handle classy types, so the primitive ones have their own type guards:
 
 ```javascript
 isUndefined(undefined); // true
@@ -121,9 +121,9 @@ isLike(null)(undefined); // false
 ```
 
 
-### Reusing typeguards
+### Reusing type guards
 
-Although it may seem clunky to have to write `is(x)(y)` instead of `is(x, y)`, this is a design choice based on the fact that partial application is so awesome. Not only does it get rid of `xs.filter(x => is(T, x))` in favor of `xs.filter(is(T))`, it also lets you save and reuse typeguards:
+Although it may seem clunky to have to write `is(x)(y)` instead of `is(x, y)`, this is a design choice based on the fact that partial application is so awesome. Not only does it get rid of `xs.filter(x => is(T, x))` in favor of `xs.filter(is(T))`, it also lets you save and reuse type guards:
 
 ```javascript
 const isFoo = is(LongModuleName.Foo);
