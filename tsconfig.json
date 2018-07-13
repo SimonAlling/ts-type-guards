@@ -4,11 +4,14 @@
             "es6"
         ],
         "sourceMap": true,
-        "target": "es6",
+        "target": "es2017",
         "declaration": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
-        "module": "commonjs",
+        "module": "es2015",
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "moduleResolution": "node",
         "outDir": "dist",
         "preserveConstEnums": true

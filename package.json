@@ -34,12 +34,13 @@
   "bugs": {
     "url": "https://github.com/simonalling/ts-type-guards"
   },
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p ."
   },
   "devDependencies": {
-    "typescript": "^2.5.3"
+    "typescript": "^2.9.2"
   }
 }
