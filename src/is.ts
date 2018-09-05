@@ -119,6 +119,13 @@ export function isLike<T>(reference: T): TypeGuard<T> {
         const referenceAsArray = reference as any as Array<any>;
         return (x: any): x is T => is(Array)(x) && (referenceAsArray.length > 0 ? x.every(isLike(referenceAsArray[0])) : true);
     }
+    if (reference.constructor === Object) {
+        return (x: any): x is T => (
+            ![ undefined, null ].includes(x)
+            &&
+            Object.keys(reference).every(k => isLike((reference as any)[k])(x[k]))
+        );
+    }
     if (reference.constructor instanceof Function) {
         return is<T>(reference.constructor);
     }
