@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "lib": [
-            "es6", "es2018"
+            "es6", "es2018", "es2015.symbol"
         ],
         "sourceMap": true,
         "target": "es2017",
