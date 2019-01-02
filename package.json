@@ -36,10 +36,14 @@
   },
   "sideEffects": false,
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "jest",
-    "build": "tsc -p ."
+    "build": "npm run clean && tsc -p . && npm run rename && npm run commonjs",
+    "clean": "rm -rf dist/*",
+    "commonjs": "babel **/*.mjs --out-dir dist",
+    "rename": "renamer --force --find \"/\\.js$/\" --replace \".mjs\" \"dist/**\"",
+    "test": "jest"
   },
   "jest": {
     "transform": {
@@ -54,6 +58,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.1",
     "jest": "^23.5.0",
+    "renamer": "^1.1.1",
     "ts-jest": "^23.1.4",
     "typescript": "^2.9.2"
   }
