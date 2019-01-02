@@ -42,6 +42,7 @@
     "build": "npm run clean && tsc -p . && npm run rename && npm run commonjs",
     "clean": "rm -rf dist/*",
     "commonjs": "babel **/*.mjs --out-dir dist",
+    "prepublishOnly": "npm run build && npm test",
     "rename": "renamer --force --find \"/\\.js$/\" --replace \".mjs\" \"dist/**\"",
     "test": "jest"
   },
