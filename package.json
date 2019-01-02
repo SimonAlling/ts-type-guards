@@ -35,13 +35,11 @@
     "url": "https://github.com/simonalling/ts-type-guards"
   },
   "sideEffects": false,
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "main": "dist/index",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc -p . && npm run rename && npm run commonjs",
+    "build": "npm run clean && tsc -d -p . && npm run rename && tsc --module CommonJS -p .",
     "clean": "rm -rf dist/*",
-    "commonjs": "babel **/*.mjs --out-dir dist",
     "prepublishOnly": "npm run build && npm test",
     "rename": "renamer --force --find \"/\\.js$/\" --replace \".mjs\" \"dist/**\"",
     "test": "jest"
