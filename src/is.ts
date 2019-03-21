@@ -7,7 +7,7 @@ const TYPE_GUARDS_PRIMITIVE = [isBoolean, isNumber, isString, isSymbol, isNull, 
  *
  * @param x
  */
-export function isBoolean(x: any): x is boolean {
+export function isBoolean(x: unknown): x is boolean {
     return typeof x === "boolean";
 }
 
@@ -16,7 +16,7 @@ export function isBoolean(x: any): x is boolean {
  *
  * @param x
  */
-export function isNumber(x: any): x is number {
+export function isNumber(x: unknown): x is number {
     return typeof x === "number";
 }
 
@@ -25,7 +25,7 @@ export function isNumber(x: any): x is number {
  *
  * @param x
  */
-export function isString(x: any): x is string {
+export function isString(x: unknown): x is string {
     return typeof x === "string";
 }
 
@@ -34,7 +34,7 @@ export function isString(x: any): x is string {
  *
  * @param x
  */
-export function isSymbol(x: any): x is symbol {
+export function isSymbol(x: unknown): x is symbol {
     return typeof x === "symbol";
 }
 
@@ -43,7 +43,7 @@ export function isSymbol(x: any): x is symbol {
  *
  * @param x
  */
-export function isNull(x: any): x is null {
+export function isNull(x: unknown): x is null {
     return x === null;
 }
 
@@ -52,7 +52,7 @@ export function isNull(x: any): x is null {
  *
  * @param x
  */
-export function isUndefined(x: any): x is undefined {
+export function isUndefined(x: unknown): x is undefined {
     return x === undefined;
 }
 
@@ -81,7 +81,7 @@ export function isSomething<T>(x: T | undefined | null): x is T {
  *
  * @return `true` iff `x` is a `boolean`, `number`, `string`, `symbol`, `null`, or `undefined`.
  */
-export function isPrimitive(x: any): x is primitive {
+export function isPrimitive(x: unknown): x is primitive {
     return TYPE_GUARDS_PRIMITIVE.some(f => f(x));
 }
 
@@ -92,7 +92,7 @@ export function isPrimitive(x: any): x is primitive {
  *
  * @return `true` iff `x` is not a primitive.
  */
-export function isNonPrimitive(x: any): x is object {
+export function isNonPrimitive(x: unknown): x is object {
     return !isPrimitive(x);
 }
 
@@ -113,9 +113,9 @@ function namedTypeGuard<T>(creator: Function, type: Classy<T>, typeGuard: TypeGu
  */
 export function is<T>(type: Classy<T>): TypeGuard<T> {
     if (isPrimitive(type)) {
-        return (_: any): _ is T => false; // to resemble the semantics of instanceof
+        return (_: unknown): _ is T => false; // to resemble the semantics of instanceof
     }
-    return namedTypeGuard(is, type, (x: any): x is T => x instanceof type);
+    return namedTypeGuard(is, type, (x: unknown): x is T => x instanceof type);
 }
 
 /**
@@ -129,16 +129,15 @@ export function isLike<T>(reference: T): TypeGuard<T> {
     for (const f of TYPE_GUARDS_PRIMITIVE) {
         if (f(reference)) {
             // This eta abstraction is necessary to please the typechecker, which otherwise complains that "type 'boolean' is not assignable to type 'T'" etc.
-            return (x: any): x is T => f(x);
+            return (x: unknown): x is T => f(x);
         }
     }
     if (is(Array)(reference)) {
-        const referenceAsArray = reference as any as Array<any>;
-        return (x: any): x is T => is(Array)(x) && (referenceAsArray.length > 0 ? x.every(isLike(referenceAsArray[0])) : true);
+        return (x: unknown): x is T => is(Array)(x) && (reference.length > 0 ? x.every(isLike(reference[0])) : true);
     }
     if (reference.constructor === Object) {
-        return (x: any): x is T => (
-            ![ undefined, null ].includes(x)
+        return (x: any): x is T => ( // x must be of type any because we use x[k] below
+            isSomething(x)
             &&
             Object.keys(reference).every(k => isLike((reference as any)[k])(x[k]))
         );
