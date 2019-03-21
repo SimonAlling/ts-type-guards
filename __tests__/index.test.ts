@@ -5,6 +5,8 @@ import {
     isSymbol,
     isNull,
     isUndefined,
+    isNothing,
+    isSomething,
     isPrimitive,
     isNonPrimitive,
     is,
@@ -70,6 +72,27 @@ it("isNull", () => {
         shouldSatisfy: [ null ],
         shouldNotSatisfy: [ undefined, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {} ],
     });
+});
+
+it("isNothing", () => {
+    check(isNothing, {
+        shouldSatisfy: [ null, undefined ],
+        shouldNotSatisfy: [ true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {} ],
+    });
+});
+
+it("isSomething", () => {
+    check(isSomething, {
+        shouldSatisfy: [ true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {} ],
+        shouldNotSatisfy: [ null, undefined ],
+    });
+    class Cat { name: string }
+    class Dog { name: string }
+    function accessName(x: Cat | Dog | null | undefined) {
+        if (isSomething(x)) {
+            x.name; // should compile
+        }
+    }
 });
 
 it("isBoolean", () => {

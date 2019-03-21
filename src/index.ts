@@ -11,6 +11,8 @@ export {
     isSymbol,
     isNull,
     isUndefined,
+    isSomething,
+    isNothing,
     isPrimitive,
     isNonPrimitive,
     is,

@@ -57,6 +57,24 @@ export function isUndefined(x: any): x is undefined {
 }
 
 /**
+ * Type guard for `null` or `undefined`.
+ *
+ * @param x
+ */
+export function isNothing<T>(x: T | undefined | null): x is null | undefined {
+    return x === null || x === undefined;
+}
+
+/**
+ * Type guard for everything except `null` and `undefined`.
+ *
+ * @param x
+ */
+export function isSomething<T>(x: T | undefined | null): x is T {
+    return !isNothing(x);
+}
+
+/**
  * Determines if something is a primitive.
  *
  * @param x
