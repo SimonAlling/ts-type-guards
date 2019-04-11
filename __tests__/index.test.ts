@@ -9,6 +9,7 @@ import {
     isNonPrimitive,
     is,
     isLike,
+    guard,
 } from "../src/index";
 
 const SATISFY = true;
@@ -113,6 +114,14 @@ it("isNonPrimitive", () => {
         shouldNotSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol() ],
     });
 });
+
+class Mineral { constructor(public readonly name: string) {} }
+class Mineraloid extends Mineral {}
+class Crystal extends Mineral { constructor(public readonly name: string, public readonly color: string) { super(name); }}
+class Quartz extends Crystal {}
+const obsidian = new Mineraloid("Obsidian");
+const amethyst = new Quartz("Amethyst", "purple");
+const prasiolite = new Quartz("Prasiolite", "green");
 
 class Animal { constructor(public readonly name: string) {} }
 class Lion extends Animal {}
@@ -224,5 +233,64 @@ it("isLike for array of dictionaries", () => {
     check(isLike([ { a: "aaa" } ]), {
         shouldSatisfy: [ [], [ { a: "a" } ], [ { a: "a" }, { a: "aa" } ] ],
         shouldNotSatisfy: BASICS.concat([ {}, [ {} ], [ { b: "bbb" } ], [ { a: 5 } ], [ { a: undefined } ] ]),
+    });
+});
+
+it("guard as a simple wrapper", () => {
+    check(guard(isNonPrimitive), {
+        shouldSatisfy: [ _ => 5, [], {} ],
+        shouldNotSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol() ],
+    });
+    check(guard(isPrimitive), {
+        shouldSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol() ],
+        shouldNotSatisfy: [ _ => 5, [], {} ],
+    });
+    check(guard(is(Mineral)), {
+        shouldSatisfy: [ obsidian, amethyst, prasiolite ],
+        shouldNotSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, simba, pumbaa, nala, someone ],
+    });
+});
+
+it("guard: chains starting with primitives", () => {
+    expect(guard(isUndefined)).toHaveProperty('or');
+    expect(guard(isUndefined)).not.toHaveProperty('and');
+
+    check(guard(isUndefined).or(isNull), {
+        shouldSatisfy: [ undefined, null ],
+        shouldNotSatisfy: [ true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {} ],
+    });
+    check(guard(isUndefined).or(isNull).or(is(Animal)), {
+        shouldSatisfy: [ undefined, null, simba, nala, pumbaa, someone ],
+        shouldNotSatisfy: [ "", "foo", true, false, 0, 1, Symbol(), _ => 5, [], {} ],
+    });
+    check(guard(isUndefined).or(is(Lion)), {
+        shouldSatisfy: [ undefined, simba, nala ],
+        shouldNotSatisfy: [ null, "", "foo", _ => 5, true, false, 0, 1, Symbol(), [], {}, pumbaa, someone ],
+    });
+    check(guard(isUndefined).or(is(Lion)), {
+        shouldSatisfy: [ undefined, simba, nala ],
+        shouldNotSatisfy: [ null, "", "foo", _ => 5, true, false, 0, 1, Symbol(), [], {}, pumbaa, someone ],
+    });
+});
+
+it("guard: chains starting with non-primitives", () => {
+    expect(guard(is(Mineral))).toHaveProperty('or');
+    expect(guard(is(Mineral))).toHaveProperty('and');
+
+    check(guard(is(Mineral)).and(is(Quartz)), {
+        shouldSatisfy: [ amethyst, prasiolite ],
+        shouldNotSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, obsidian, simba, pumbaa, nala, someone ],
+    });
+    check(guard(is(Mineral)).or(isUndefined), {
+        shouldSatisfy: [ undefined, obsidian, amethyst, prasiolite ],
+        shouldNotSatisfy: [ null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, simba, pumbaa, nala, someone ],
+    });
+    check(guard(is(Mineral)).and(is(Quartz)).or(isUndefined), {
+        shouldSatisfy: [ undefined, amethyst, prasiolite ],
+        shouldNotSatisfy: [ null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, obsidian, simba, pumbaa, nala, someone ],
+    });
+    check(guard(is(Mineral)).and(is(Animal)), {
+        shouldSatisfy: [ ],
+        shouldNotSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, obsidian, amethyst, prasiolite, simba, pumbaa, nala, someone ],
     });
 });

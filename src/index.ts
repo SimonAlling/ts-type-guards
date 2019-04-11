@@ -15,6 +15,8 @@ export {
     isNonPrimitive,
     is,
     isLike,
+    guard,
+    isNullLike,
 } from "./is";
 
 export {

@@ -1,6 +1,55 @@
-import { primitive, Classy, TypeGuard } from "./types";
+import {
+    primitive,
+    Classy,
+    TypeGuard,
+    UnionTypeGuard,
+    FullyChainableTypeGuard,
+    PrimitiveTypeGuard,
+    NonPrimitiveTypeGuard,
+    ChainableTypeGuard,
+} from "./types";
 
 const TYPE_GUARDS_PRIMITIVE = [isBoolean, isNumber, isString, isSymbol, isNull, isUndefined];
+
+function intersect<TA, TB>(
+    guardA: TypeGuard<TA>,
+    guardB: TypeGuard<TB>,
+): FullyChainableTypeGuard<TA & TB> {
+    const guard: any = (value: any): value is TA & TB => guardA(value) && guardB(value);
+    guard.chainable = true;
+    guard.or = <TC>(guardC: TypeGuard<TC>) => unionize(guard, guardC, true);
+    guard.and = <TC>(guardC: TypeGuard<TC>) => intersect(guard, guardC);
+    return guard;
+}
+
+function unionize<TA, TB>(
+    guardA: TypeGuard<TA>,
+    guardB: TypeGuard<TB>,
+    chainable: true,
+): FullyChainableTypeGuard<TA | TB>;
+function unionize<TA, TB>(
+    guardA: TypeGuard<TA>,
+    guardB: TypeGuard<TB>,
+    chainable: false,
+): UnionTypeGuard<TA | TB>;
+function unionize<TA, TB>(
+    guardA: TypeGuard<TA>,
+    guardB: TypeGuard<TB>,
+    chainable: boolean,
+): FullyChainableTypeGuard<TA | TB> | UnionTypeGuard<TA | TB>;
+function unionize<TA, TB>(
+    guardA: TypeGuard<TA>,
+    guardB: TypeGuard<TB>,
+    chainable: boolean,
+): UnionTypeGuard<TA | TB> | FullyChainableTypeGuard<TA | TB> {
+    const guard: any = (value: any): value is TA & TB => guardA(value) || guardB(value);
+    guard.chainable = chainable;
+    guard.or = <TC>(guardC: FullyChainableTypeGuard<TC>) => unionize(guard, guardC, chainable);
+    if (chainable) {
+        guard.and = <TC>(guardC: FullyChainableTypeGuard<TC>) => intersect(guard, guardC);
+    }
+    return guard;
+}
 
 /**
  * Type guard for `boolean`.
@@ -93,11 +142,16 @@ function namedTypeGuard<T>(creator: Function, type: Classy<T>, typeGuard: TypeGu
  *
  * @return A type guard which returns `true` iff its argument `x` satisfies `x instanceof type`.
  */
-export function is<T>(type: Classy<T>): TypeGuard<T> {
+export function is<T extends object>(reference: Classy<T>): NonPrimitiveTypeGuard<T>;
+export function is<T extends primitive>(reference: T): PrimitiveTypeGuard<primitive>;
+export function is<T>(type: primitive | Classy<T>): TypeGuard<T>;
+export function is<T>(type: primitive | Classy<T>): TypeGuard<T> {
     if (isPrimitive(type)) {
         return (_: any): _ is T => false; // to resemble the semantics of instanceof
     }
-    return namedTypeGuard(is, type, (x: any): x is T => x instanceof type);
+    const guard: any = namedTypeGuard(is, type, (x: any): x is T => x instanceof type);
+    guard.chainable = true;
+    return guard;
 }
 
 /**
@@ -107,6 +161,9 @@ export function is<T>(type: Classy<T>): TypeGuard<T> {
  *
  * @return A type guard which returns `true` iff its argument is of the same type as `reference` or is an instance of that type.
  */
+export function isLike<T extends object>(reference: T): NonPrimitiveTypeGuard<T>;
+export function isLike<T extends primitive>(reference: T): PrimitiveTypeGuard<T>;
+export function isLike<T>(reference: T): TypeGuard<T>;
 export function isLike<T>(reference: T): TypeGuard<T> {
     for (const f of TYPE_GUARDS_PRIMITIVE) {
         if (f(reference)) {
@@ -114,19 +171,57 @@ export function isLike<T>(reference: T): TypeGuard<T> {
             return (x: any): x is T => f(x);
         }
     }
+    let guard: any;
     if (is(Array)(reference)) {
         const referenceAsArray = reference as any as Array<any>;
-        return (x: any): x is T => is(Array)(x) && (referenceAsArray.length > 0 ? x.every(isLike(referenceAsArray[0])) : true);
-    }
-    if (reference.constructor === Object) {
-        return (x: any): x is T => (
+        guard = (x: any): x is T => is(Array)(x) && (referenceAsArray.length > 0 ? x.every(isLike(referenceAsArray[0])) : true);
+    } else if (reference.constructor === Object) {
+        guard = (x: any): x is T => (
             ![ undefined, null ].includes(x)
             &&
             Object.keys(reference).every(k => isLike((reference as any)[k])(x[k]))
         );
+    } else if (reference.constructor instanceof Function) {
+        guard = is(reference.constructor);
     }
-    if (reference.constructor instanceof Function) {
-        return is<T>(reference.constructor);
+    if (guard) {
+        guard.chainable = true;
+        return guard;
     }
     throw new TypeError(isLike.name + ` cannot use this object as reference because it has no constructor: ` + JSON.stringify(reference));
 }
+
+/**
+ * Curried type guard builder that is itself a type guard.
+ * 
+ * `guard` by itself is a mere wrapper around a type guard. The difference is 
+ * that with a `guard` wrapper it's possible to chain type guards together,
+ * either by union or intersection.
+ *  
+ * `guard.or` creates a union of both type checks, e.g.
+ * `guard(is(Animal)).or(isUndefined) => TypeGuard<Animal | undefined>`.
+ * 
+ * `guard.and` creates an intersection of both type checks,
+ * e.g. `guard(is(Animal)).and(is(Human)) => TypeGuard<Animal & Human>`.
+ *
+ * @param guard An object to use as reference for the type guard.
+ *
+ * @return A wrapped chainable type guard, that will perform exactly the
+ * same check as its.
+ */
+export function guard<T extends object>(guard: NonPrimitiveTypeGuard<T>): FullyChainableTypeGuard<T>;
+export function guard<T extends primitive>(guard: PrimitiveTypeGuard<T>): UnionTypeGuard<T>;
+export function guard<T>(guard: TypeGuard<T>): ChainableTypeGuard<T>;
+export function guard<T>(guard: TypeGuard<T>): ChainableTypeGuard<T> | UnionTypeGuard<T> | FullyChainableTypeGuard<T> {
+    const chainable = isBoolean(guard.chainable) ? guard.chainable : false;
+    const wrapperGuard: any = (value: any): value is T => guard(value);
+    wrapperGuard.chainable = chainable;
+    wrapperGuard.or = <T2>(guard2: TypeGuard<T2>) => unionize(wrapperGuard, guard2, chainable);
+    if (chainable) {
+        wrapperGuard.and = <T2>(guard2: TypeGuard<T2>) => intersect(wrapperGuard, guard2);
+    }
+    return wrapperGuard;
+}
+
+
+export const isNullLike = guard(isNull).or(isUndefined);

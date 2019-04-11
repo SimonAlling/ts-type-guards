@@ -136,6 +136,29 @@ xs.filter(isFoo).forEach(x => x.baz());
 ```
 
 
+### Chaining type guards together
+
+You can also check for more than one type by chaining type guards with the `guard` wrapper.
+
+`guard` returns a wrapper type guard just like `is` or `isLike`, but exposes two additional properties to the type guard itself:
+
+- `guard(wrappedGuard).or(anotherGuard)` returns a new type guard that checks a value for either `wrappedGuard` or `anotherGuard`. In TypeScript parlance, `or` returns a type union-based type guard; and
+- `guard(wrappedGuard).and(anotherGuard)` returns a new type guard that checks value for both `wrappedGuard` and `anotherGuard`. In TypeScript parlance, `and` returns a type intersection-based type guard. In general, `and` is not available for primitive type-based type guards.
+
+```typescript
+const isNullLike: TypeGuard<null | undefined> = 
+    guard(isNull).or(isUndefined);
+
+const isAnimalAndLion: TypeGuard<Animal & Lion> = 
+    guard(is(Animal)).and(is(Lion));
+
+const isNonNullable: TypeGuard<(Animal & Lion) | null | undefined> = 
+    guard(isAnimalAndLion).or(isNullLike);
+```
+
+Note: `isNullLike` is already provided by the library, what's shown here is merely an example (and in fact, that's exactly how it is implemented)!
+
+
 ### Arrays
 
 You can check if something is an array of a certain type:
@@ -154,11 +177,11 @@ isArrayOf(Error)([
 ## Contributing
 
 1. [Fork the repo](https://github.com/SimonAlling/ts-type-guards/fork).
-1. Create your feature branch (`git checkout -b feature/foobar`).
-1. Examine and add your changes (`git diff`, then `git add ...`).
-1. Commit your changes (`git commit -m 'Add some foobar'`).
-1. Push your feature branch (`git push origin feature/foobar`).
-1. [Create a pull request](https://github.com/SimonAlling/ts-type-guards/pulls).
+2. Create your feature branch (`git checkout -b feature/foobar`).
+3. Examine and add your changes (`git diff`, then `git add ...`).
+4. Commit your changes (`git commit -m 'Add some foobar'`).
+5. Push your feature branch (`git push origin feature/foobar`).
+6. [Create a pull request](https://github.com/SimonAlling/ts-type-guards/pulls).
 
 
 
