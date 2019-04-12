@@ -150,15 +150,44 @@ isArrayOf(Error)([
 ```
 
 
+### Ensuring values are of a certain type
+
+You can use `ensure` to guarantee that a given type is of a specified type.
+
+`ensure` receives a type guard and returns an identity function that returns its argument if it passes the type guard test, or throws a `TypeError` otherwise (optionally, with a custom error message).
+
+Optionally, you can provide a fallback value, getter or mapper with `ensure(guard).orElse`, `ensure(guard).orGet` and `ensure(guard).orMap`, respectively, in case the type doesn't pass the type guard test.
+
+```typescript
+const mustBeString = ensure(isString, 'oops');
+const willBeString = ensure(isString).orElse('none');
+const willBeStringLazily = ensure(isString).orGet(() => 'none, but late');
+const willBeStringSomehow = ensure(isString).orMap(value => `oops: ${String(value)}`);
+
+mustBeString('simba'); // 'simba'
+mustBeString(undefined); // (throws TypeError('oops'))
+
+willBeString('nala'); // 'nala'
+willBeString(null); // 'none'
+
+willBeStringLazily('pumbaa'); // 'pumbaa'
+willBeStringLazily(10); // 'none, but late'
+
+willBeStringSomehow('someone'); // 'someone'
+willBeStringSomehow([someone]); // 'oops: [object Object]'
+```
+
+NOTE: Fallback functions are only called when a value does not conform to the type. Also, a fallback value, if any, must also have a conforming type (according to the type guard).
+
 
 ## Contributing
 
 1. [Fork the repo](https://github.com/SimonAlling/ts-type-guards/fork).
-1. Create your feature branch (`git checkout -b feature/foobar`).
-1. Examine and add your changes (`git diff`, then `git add ...`).
-1. Commit your changes (`git commit -m 'Add some foobar'`).
-1. Push your feature branch (`git push origin feature/foobar`).
-1. [Create a pull request](https://github.com/SimonAlling/ts-type-guards/pulls).
+2. Create your feature branch (`git checkout -b feature/foobar`).
+3. Examine and add your changes (`git diff`, then `git add ...`).
+4. Commit your changes (`git commit -m 'Add some foobar'`).
+5. Push your feature branch (`git push origin feature/foobar`).
+6. [Create a pull request](https://github.com/SimonAlling/ts-type-guards/pulls).
 
 
 

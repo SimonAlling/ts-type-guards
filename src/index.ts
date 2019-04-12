@@ -2,6 +2,8 @@ export {
     primitive,
     Classy,
     TypeGuard,
+    TypeEnforcer,
+    TypeEnsurer,
 } from "./types";
 
 export {
@@ -42,3 +44,7 @@ export {
     only,
     onlyLike,
 } from "./only";
+
+export {
+    ensure,
+} from './ensure';

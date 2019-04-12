@@ -9,6 +9,7 @@ import {
     isNonPrimitive,
     is,
     isLike,
+    ensure,
 } from "../src/index";
 
 const SATISFY = true;
@@ -225,4 +226,26 @@ it("isLike for array of dictionaries", () => {
         shouldSatisfy: [ [], [ { a: "a" } ], [ { a: "a" }, { a: "aa" } ] ],
         shouldNotSatisfy: BASICS.concat([ {}, [ {} ], [ { b: "bbb" } ], [ { a: 5 } ], [ { a: undefined } ] ]),
     });
+});
+
+it("ensure", () => {
+    const message = "NOT VALID";
+
+    expect(ensure(isUndefined)).toBeInstanceOf(Function);
+    expect(ensure(isUndefined).orElse).toBeInstanceOf(Function);
+    expect(ensure(isUndefined).orGet).toBeInstanceOf(Function);
+    expect(ensure(isUndefined).orMap).toBeInstanceOf(Function);
+
+    expect(() => ensure(isUndefined)(null)).toThrowError(TypeError);
+    expect(() => ensure(isUndefined, message)(null)).toThrowError(message);
+    expect(ensure(isString)(message)).toBe(message);
+
+    expect(ensure(isString).orElse(message)('')).toBe('');
+    expect(ensure(isString).orElse(message)(null)).toBe(message);
+
+    expect(ensure(isString).orGet(() => message)('')).toBe('');
+    expect(ensure(isString).orGet(() => message)(null)).toBe(message);
+
+    expect(ensure(isString).orMap(value => `${String(value)}: message`)('')).toBe('');
+    expect(ensure(isString).orMap(value => `${String(value)}: message`)(null)).toBe(`${String(null)}: message`);
 });
