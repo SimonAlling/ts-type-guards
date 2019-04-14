@@ -68,7 +68,7 @@ export function ensure<T>(
                 if (guard(value)) return value;
                 return fallback;
             };
-            assignName(doEnforce, makeEnsurerName(guard, 'orElse', fallback));
+            assignName(ensurer, makeEnsurerName(guard, 'orElse', fallback));
             return ensurer;
         },
         orGet<F extends T>(fallbackGetter: (() => F)) {
@@ -79,7 +79,7 @@ export function ensure<T>(
                 if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
                 return fallback;
             };
-            assignName(doEnforce, makeEnsurerName(guard, 'orElse', fallbackGetter));
+            assignName(ensurer, makeEnsurerName(guard, 'orElse', fallbackGetter));
             return ensurer;
         },
         orMap<F extends T>(fallbackMapper: ((value: any) => F)) {
@@ -90,7 +90,7 @@ export function ensure<T>(
                 if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
                 return fallback;
             };
-            assignName(doEnforce, makeEnsurerName(guard, 'orElse', fallbackMapper));
+            assignName(ensurer, makeEnsurerName(guard, 'orElse', fallbackMapper));
             return ensurer;
         },
     });
