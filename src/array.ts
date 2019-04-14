@@ -1,4 +1,4 @@
-import { primitive, Classy } from "./types";
+import { primitive, Classy, TypeGuard, ArrayTypeGuard, ReadonlyArrayTypeGuard } from "./types";
 import { isBoolean, isNumber, isString, isSymbol, isNull, isUndefined, isPrimitive, isNonPrimitive, is, isLike } from "./is";
 
 export function isArrayOfBooleans(x: any): x is boolean[] {
@@ -39,4 +39,20 @@ export function isArrayOf<T>(type: Classy<T>): (xs: any) => xs is T[] {
 
 export function isArrayOfLike<T>(reference: T): (x: any) => x is T[] {
     return (x: any): x is T[] => is(Array)(x) && x.every(isLike(reference));
+}
+
+export function isArrayOfAll<T>(guard: TypeGuard<T>): ArrayTypeGuard<T> {
+    return (xs: any): xs is T[] => is(Array)(xs) && xs.every(guard);
+}
+
+export function isArrayOfSome<T>(guard: TypeGuard<T>): ArrayTypeGuard<T> {
+    return (xs: any): xs is T[] => is(Array)(xs) && xs.some(guard);
+}
+
+export function isReadonlyArrayOfAll<T>(guard: TypeGuard<T>): ReadonlyArrayTypeGuard<T> {
+    return isArrayOfAll(guard);
+}
+
+export function isReadonlyArrayOfSome<T>(guard: TypeGuard<T>): ReadonlyArrayTypeGuard<T> {
+    return isArrayOfSome(guard)
 }

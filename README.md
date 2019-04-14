@@ -50,6 +50,23 @@ const fooImages = only(HTMLImageElement)(foos);
 const srcs = fooImages.map(img => img.src); // Compiles and runs safely.
 ```
 
+Additionally, `onlyIf` can also be used to filter non-classy values, if needed.
+
+```typescript
+import { onlyIf } from "ts-type-guards";
+
+type IdOrRef = string | { id: string };
+
+function toReferences(idsOrReferences: IdOrRef[]) {
+    const onlyIds = onlyIf(isString)(idsOrReferences);
+    const idsAsReferences = onlyIds.map(id => { id });
+    const onlyReferences = onlyIf(isNonPrimitive)(idsOrReferences);
+    return [
+        ...idsAsReferences,
+        ...onlyReferences,
+    ];
+}
+```
 
 ### Checking Against Another Value
 
@@ -147,18 +164,58 @@ isArrayOf(Error)([
     new RangeError(),
     new TypeError(),
 ]); // true
+isArrayOfAll(isString)([ "simba", "nala" ]); // false
+isArrayOfAll(isString)([ "simba", new Lion("nala") ]); // false
+isArrayOfSome(isString)([ "simba", new Lion("nala") ]); // true
 ```
 
+All of the examples above are roughly equivalent to:
+
+```javascript
+function isArrayOfX(guard) {
+    if (is(Array)(xs)) {
+        return xs.every(guard); // or xs.some(guard) in the case of isArrayOfSome
+    }
+}
+```
+
+
+#### Arrays and Readonly-ness
+
+`isArrayOfAll` and `isArrayOfSome` are typed so that they return a curried type guard that preserves the readonly-ness of an eventual readonly array input, if any.
+
+In other words: if the input value is statically known to be a readonly array, the return type of the curried type guard is `xs is ReadonlyArray<T>`; otherwise, the return type is `xs is T[]`.
+
+If you want to force the curried type guard to have an exclusively readonly array type check (i.e. always `xs is ReadonlyArray<T>`), use `isReadonlyArrayOfAll` and `isReadonlyArrayOfSome` instead. Note, however, that the input value is still checked **only** for `is(Array)`; neither [freezing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) nor [sealing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal) checks are performed.
+
+```typescript
+declare const animals: any;
+declare const readonlyAnimals: ReadonlyArray<any>;
+
+const isAnimal = is(Animal);
+
+if (isArrayOfAll(isAnimal)(animals)) {
+    // animals is Animal[]
+}
+
+if (isArrayOfAll(isAnimal)(readonlyAnimals)) {
+    // readonlyAnimals is ReadOnlyArray<Animal>
+}
+
+if (isReadonlyArrayOfAll(isAnimal)(animals)) {
+    // animals is ReadOnlyArray<Animal>
+}
+```
 
 
 ## Contributing
 
 1. [Fork the repo](https://github.com/SimonAlling/ts-type-guards/fork).
-1. Create your feature branch (`git checkout -b feature/foobar`).
-1. Examine and add your changes (`git diff`, then `git add ...`).
-1. Commit your changes (`git commit -m 'Add some foobar'`).
-1. Push your feature branch (`git push origin feature/foobar`).
-1. [Create a pull request](https://github.com/SimonAlling/ts-type-guards/pulls).
+2. Create your feature branch (`git checkout -b feature/foobar`).
+3. Examine and add your changes (`git diff`, then `git add ...`).
+4. Commit your changes (`git commit -m 'Add some foobar'`).
+5. Push your feature branch (`git push origin feature/foobar`).
+6. [Create a pull request](https://github.com/SimonAlling/ts-type-guards/pulls).
 
 
 

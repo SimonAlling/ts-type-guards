@@ -2,6 +2,8 @@ export {
     primitive,
     Classy,
     TypeGuard,
+    ArrayTypeGuard,
+    ReadonlyArrayTypeGuard,
 } from "./types";
 
 export {
@@ -28,6 +30,10 @@ export {
     isArrayOfObjects,
     isArrayOf,
     isArrayOfLike,
+    isArrayOfAll,
+    isArrayOfSome,
+    isReadonlyArrayOfAll,
+    isReadonlyArrayOfSome,
 } from "./array";
 
 export {
@@ -41,4 +47,5 @@ export {
     onlyObjects,
     only,
     onlyLike,
+    onlyIf,
 } from "./only";
