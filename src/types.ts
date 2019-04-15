@@ -9,6 +9,7 @@ export type TypeGuard<T> = (x: any) => x is T;
  */
 export interface TypeEnforcer<T> {
     readonly name: string;
+    readonly hasFallback?: false;
     <V extends T>(value: V): V;
     (value: any): never;
 
@@ -25,6 +26,7 @@ export interface TypeEnforcer<T> {
  */
 export interface TypeEnsurer<T, F extends T = T> {
     readonly name: string;
+    readonly hasFallback: true;
     <V extends T>(value: V): V;
     (value: any): F;
 }

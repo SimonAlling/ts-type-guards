@@ -177,6 +177,28 @@ willBeStringSomehow('someone'); // 'someone'
 willBeStringSomehow([someone]); // 'oops: [object Object]'
 ```
 
+You can also use the curried type ensurer to map values:
+
+```typescript
+const mustBeString = ensure(isString, 'oops');
+const willBeString = ensure(isString).orElse('none');
+const willBeStringLazily = ensure(isString).orGet(() => 'none, but late');
+const willBeStringSomehow = ensure(isString).orMap(value => `oops: ${String(value)}`);
+
+const someNames = ['simba', new Lion('nala')];
+const allNames = ['simba', 'nala'];
+
+allNames.map(mustBeString); // ['simba', 'nala']
+allNames.map(willBeString); // ['simba', 'nala']
+allNames.map(willBeStringLazily); // ['simba', 'nala']
+allNames.map(willBeStringSomehow); // ['simba', 'nala']
+
+someNames.map(mustBeString); // (throws TypeError('oops'))
+someNames.map(willBeString); // ['simba', 'none']
+someNames.map(willBeStringLazily); // ['simba', 'none, but late']
+someNames.map(willBeStringSomehow); // ['simba', 'oops: [object Object]']
+```
+
 NOTE: Fallback functions are only called when a value does not conform to the type. Also, a fallback value, if any, must also have a conforming type (according to the type guard).
 
 

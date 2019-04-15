@@ -2,6 +2,7 @@
 import {
     TypeGuard,
     TypeEnforcer,
+    TypeEnsurer,
 } from './types';
 
 function makeEnforcerName<T>(guard: TypeGuard<T>) {
@@ -31,6 +32,7 @@ function assignName<T>(value: T, name: string) {
         configurable: true,
         enumerable: true,
     });
+    return value;
 }
 
 /**
@@ -64,33 +66,42 @@ export function ensure<T>(
     const enforcer = Object.assign(doEnforce, {
         orElse<F extends T>(fallback: F) {
             if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
-            const ensurer = <V>(value: V): V | F => {
-                if (guard(value)) return value;
-                return fallback;
-            };
-            assignName(ensurer, makeEnsurerName(guard, 'orElse', fallback));
+            const ensurer = Object.assign(
+                assignName(
+                    <V>(value: V): V | F => {
+                        if (guard(value)) return value;
+                        return fallback;
+                    }, makeEnsurerName(guard, 'orElse', fallback),
+                ), { hasFallback: true } as { hasFallback: true },
+            );
             return ensurer;
         },
         orGet<F extends T>(fallbackGetter: (() => F)) {
             if (typeof fallbackGetter !== 'function') throw new TypeError("Invalid fallback getter");
-            const ensurer = <V>(value: V): V | F => {
-                if (guard(value)) return value;
-                const fallback = fallbackGetter();
-                if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
-                return fallback;
-            };
-            assignName(ensurer, makeEnsurerName(guard, 'orElse', fallbackGetter));
+            const ensurer = Object.assign(
+                assignName(
+                    <V>(value: V): V | F => {
+                        if (guard(value)) return value;
+                        const fallback = fallbackGetter();
+                        if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
+                        return fallback;
+                    }, makeEnsurerName(guard, 'orElse', fallbackGetter)
+                ), { hasFallback: true } as { hasFallback: true },
+            );
             return ensurer;
         },
         orMap<F extends T>(fallbackMapper: ((value: any) => F)) {
             if (typeof fallbackMapper !== 'function') throw new TypeError("Invalid fallback mapper");
-            const ensurer = <V>(value: V): V | F => {
-                if (guard(value)) return value;
-                const fallback = fallbackMapper(value);
-                if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
-                return fallback;
-            };
-            assignName(ensurer, makeEnsurerName(guard, 'orElse', fallbackMapper));
+            const ensurer = Object.assign(
+                assignName(
+                    <V>(value: V): V | F => {
+                    if (guard(value)) return value;
+                    const fallback = fallbackMapper(value);
+                    if (!guard(fallback)) throw new TypeError(invalidFallbackMessage);
+                    return fallback;
+                }, makeEnsurerName(guard, 'orElse', fallbackMapper)
+                ), { hasFallback: true } as { hasFallback: true },
+            );
             return ensurer;
         },
     });
