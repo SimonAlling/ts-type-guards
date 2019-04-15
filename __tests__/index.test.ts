@@ -12,7 +12,6 @@ import {
     TypeGuard,
     onlyIf,
     isArrayOfAll,
-    isArrayOfSome,
 } from "../src/index";
 
 const SATISFY = true;
@@ -256,17 +255,6 @@ it("isArrayOfAll", () => {
             [undefined], [null], [true], [false], [0], [1], [Symbol()], [_ => 5], [[]], [{}], [Animal], [someone],
             [undefined, null], [true, false, 0], [1, Symbol(), _ => 5], [[], {}], [Animal, someone],
             ["", _ => 5], ["", [""]],
-        ],
-    });
-});
-
-it("isArrayOfSome", () => {
-    check(isArrayOfSome(isString), {
-        shouldSatisfy: [ [ "" ], [ "", 'foo' ], [ "", Symbol() ], [ [ "" ], ""] ],
-        shouldNotSatisfy: [ 
-            undefined, null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, Animal, someone,
-            [undefined], [null], [true], [false], [0], [1], [Symbol()], [_ => 5], [[]], [{}], [Animal], [someone],
-            [undefined, null], [true, false, 0], [1, Symbol(), _ => 5], [[], {}], [Animal, someone],
         ],
     });
 });

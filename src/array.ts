@@ -45,14 +45,6 @@ export function isArrayOfAll<T>(guard: TypeGuard<T>): ArrayTypeGuard<T> {
     return (xs: any): xs is T[] => is(Array)(xs) && xs.every(guard);
 }
 
-export function isArrayOfSome<T>(guard: TypeGuard<T>): ArrayTypeGuard<T> {
-    return (xs: any): xs is T[] => is(Array)(xs) && xs.some(guard);
-}
-
 export function isReadonlyArrayOfAll<T>(guard: TypeGuard<T>): ReadonlyArrayTypeGuard<T> {
     return isArrayOfAll(guard);
-}
-
-export function isReadonlyArrayOfSome<T>(guard: TypeGuard<T>): ReadonlyArrayTypeGuard<T> {
-    return isArrayOfSome(guard)
 }

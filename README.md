@@ -182,11 +182,11 @@ function isArrayOfX(guard) {
 
 #### Arrays and Readonly-ness
 
-`isArrayOfAll` and `isArrayOfSome` are typed so that they return a curried type guard that preserves the readonly-ness of an eventual readonly array input, if any.
+`isArrayOfAll` is typed so that it returns a curried type guard that preserves the readonly-ness of an eventual readonly array input, if any.
 
 In other words: if the input value is statically known to be a readonly array, the return type of the curried type guard is `xs is ReadonlyArray<T>`; otherwise, the return type is `xs is T[]`.
 
-If you want to force the curried type guard to have an exclusively readonly array type check (i.e. always `xs is ReadonlyArray<T>`), use `isReadonlyArrayOfAll` and `isReadonlyArrayOfSome` instead. Note, however, that the input value is still checked **only** for `is(Array)`; neither [freezing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) nor [sealing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal) checks are performed.
+If you want to force the curried type guard to have an exclusively readonly array type check (i.e. always `xs is ReadonlyArray<T>`), use `isReadonlyArrayOfAll` instead. Note, however, that the input value is still checked **only** for `is(Array)`; neither [freezing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) nor [sealing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal) checks are performed.
 
 ```typescript
 declare const animals: any;

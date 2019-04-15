@@ -31,9 +31,7 @@ export {
     isArrayOf,
     isArrayOfLike,
     isArrayOfAll,
-    isArrayOfSome,
     isReadonlyArrayOfAll,
-    isReadonlyArrayOfSome,
 } from "./array";
 
 export {
