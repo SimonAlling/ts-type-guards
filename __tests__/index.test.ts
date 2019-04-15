@@ -9,6 +9,9 @@ import {
     isNonPrimitive,
     is,
     isLike,
+    TypeGuard,
+    onlyIf,
+    isArrayOfAll,
 } from "../src/index";
 
 const SATISFY = true;
@@ -224,5 +227,34 @@ it("isLike for array of dictionaries", () => {
     check(isLike([ { a: "aaa" } ]), {
         shouldSatisfy: [ [], [ { a: "a" } ], [ { a: "a" }, { a: "aa" } ] ],
         shouldNotSatisfy: BASICS.concat([ {}, [ {} ], [ { b: "bbb" } ], [ { a: 5 } ], [ { a: undefined } ] ]),
+    });
+});
+
+it("onlyIf", () => {
+    const singles: TypeGuard<any>[] = [ isUndefined, isNull, isSymbol, is(Function) ];
+    for (let predicate of singles) {
+        const filtered = onlyIf(predicate)(BASICS);
+        expect(filtered.length).toBe(1);
+        expect(predicate(filtered[0])).toSatisfy;
+    }
+    const duplicates: TypeGuard<any>[] = [ isBoolean, isNumber, isString ];
+    for (let predicate of duplicates) {
+        const filtered = onlyIf(predicate)(BASICS);
+        expect(filtered.length).toBe(2);
+        for (let value of filtered) {
+            expect(predicate(value)).toSatisfy;
+        }
+    }
+});
+
+it("isArrayOfAll", () => {
+    check(isArrayOfAll(isString), {
+        shouldSatisfy: [ [], [ "" ], [ "", 'foo' ] ],
+        shouldNotSatisfy: [ 
+            undefined, null, true, false, 0, 1, "", "foo", Symbol(), _ => 5, {}, Animal, someone,
+            [undefined], [null], [true], [false], [0], [1], [Symbol()], [_ => 5], [[]], [{}], [Animal], [someone],
+            [undefined, null], [true, false, 0], [1, Symbol(), _ => 5], [[], {}], [Animal, someone],
+            ["", _ => 5], ["", [""]],
+        ],
     });
 });

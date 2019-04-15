@@ -1,4 +1,4 @@
-import { primitive, Classy } from "./types";
+import { primitive, Classy, TypeGuard } from "./types";
 import { isBoolean, isNumber, isString, isSymbol, isNull, isUndefined, isPrimitive, isNonPrimitive, is, isLike } from "./is";
 
 export function onlyBooleans(xs: any[]): boolean[] {
@@ -39,4 +39,8 @@ export function only<T>(type: Classy<T>): (xs: any[]) => T[] {
 
 export function onlyLike<T>(reference: T): (xs: any[]) => T[] {
     return (xs: any[]): T[] => xs.filter(isLike(reference));
+}
+
+export function onlyIf<T>(guard: TypeGuard<T>): (xs: ReadonlyArray<any>) => T[] {
+    return (xs: any[]): T[] => xs.filter(guard);
 }
