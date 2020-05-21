@@ -97,21 +97,21 @@ it("isSomething", () => {
 
 it("isBoolean", () => {
     check(isBoolean, {
-        shouldSatisfy: [ true, false ],
+        shouldSatisfy: [ true, false, Boolean(true), Boolean(false), new Boolean(true), new Boolean(false) ],
         shouldNotSatisfy: [ undefined, null, 0, 1, "", "foo", Symbol(), _ => 5, [], {} ],
     });
 });
 
 it("isNumber", () => {
     check(isNumber, {
-        shouldSatisfy: [ 0, 1, -1, Math.PI, NaN, Infinity, -Infinity ],
+        shouldSatisfy: [ 0, 1, -1, Math.PI, NaN, Infinity, -Infinity, Number(1), new Number(1) ],
         shouldNotSatisfy: [ undefined, null, true, false, "", "foo", Symbol(), _ => 5, [], {} ],
     });
 });
 
 it("isString", () => {
     check(isString, {
-        shouldSatisfy: [ "", "foo" ],
+        shouldSatisfy: [ "", "foo", String("foo"), new String("foo") ],
         shouldNotSatisfy: [ undefined, null, true, false, 0, 1, Symbol(), _ => 5, [], {} ],
     });
 });

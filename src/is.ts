@@ -8,7 +8,7 @@ const TYPE_GUARDS_PRIMITIVE = [isBoolean, isNumber, isString, isSymbol, isNull, 
  * @param x
  */
 export function isBoolean(x: unknown): x is boolean {
-    return typeof x === "boolean";
+    return typeof x === "boolean" || x instanceof Boolean;
 }
 
 /**
@@ -17,7 +17,7 @@ export function isBoolean(x: unknown): x is boolean {
  * @param x
  */
 export function isNumber(x: unknown): x is number {
-    return typeof x === "number";
+    return typeof x === "number" || x instanceof Number;
 }
 
 /**
@@ -26,7 +26,7 @@ export function isNumber(x: unknown): x is number {
  * @param x
  */
 export function isString(x: unknown): x is string {
-    return typeof x === "string";
+    return typeof x === "string" || x instanceof String;
 }
 
 /**
