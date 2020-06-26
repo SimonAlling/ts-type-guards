@@ -1,0 +1,22 @@
+name: Validation
+
+on: [push, pull_request]
+
+jobs:
+  validation:
+    name: Validation Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install dependencies
+        run: |
+          npm ci
+      - name: Build
+        run: |
+          npm run build
+        env:
+          CI: true
