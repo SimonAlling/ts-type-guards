@@ -6,8 +6,11 @@ export {
 
 export {
     isBoolean,
+    isBooleanLike,
     isNumber,
+    isNumberLike,
     isString,
+    isStringLike,
     isSymbol,
     isNull,
     isUndefined,

@@ -1,7 +1,10 @@
 import {
     isBoolean,
+    isBooleanLike,
     isNumber,
+    isNumberLike,
     isString,
+    isStringLike,
     isSymbol,
     isNull,
     isUndefined,
@@ -98,6 +101,13 @@ it("isSomething", () => {
 it("isBoolean", () => {
     check(isBoolean, {
         shouldSatisfy: [ true, false ],
+        shouldNotSatisfy: [ undefined, null, 0, 1, "", "foo", Symbol(), _ => 5, [], {}, new Boolean(true) ],
+    });
+});
+
+it("isBooleanLike", () => {
+    check(isBooleanLike, {
+        shouldSatisfy: [ true, false, new Boolean(true), new Boolean(false) ],
         shouldNotSatisfy: [ undefined, null, 0, 1, "", "foo", Symbol(), _ => 5, [], {} ],
     });
 });
@@ -105,6 +115,13 @@ it("isBoolean", () => {
 it("isNumber", () => {
     check(isNumber, {
         shouldSatisfy: [ 0, 1, -1, Math.PI, NaN, Infinity, -Infinity ],
+        shouldNotSatisfy: [ undefined, null, true, false, "", "foo", Symbol(), _ => 5, [], {}, new Number(1) ],
+    });
+});
+
+it("isNumberLike", () => {
+    check(isNumberLike, {
+        shouldSatisfy: [ 0, 1, -1, Math.PI, NaN, Infinity, -Infinity, new Number(1) ],
         shouldNotSatisfy: [ undefined, null, true, false, "", "foo", Symbol(), _ => 5, [], {} ],
     });
 });
@@ -112,6 +129,13 @@ it("isNumber", () => {
 it("isString", () => {
     check(isString, {
         shouldSatisfy: [ "", "foo" ],
+        shouldNotSatisfy: [ undefined, null, true, false, 0, 1, Symbol(), _ => 5, [], {}, new String("foo") ],
+    });
+});
+
+it("isStringLike", () => {
+    check(isStringLike, {
+        shouldSatisfy: [ "", "foo", new String("foo") ],
         shouldNotSatisfy: [ undefined, null, true, false, 0, 1, Symbol(), _ => 5, [], {} ],
     });
 });
@@ -126,13 +150,13 @@ it("isSymbol", () => {
 it("isPrimitive", () => {
     check(isPrimitive, {
         shouldSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol() ],
-        shouldNotSatisfy: [ _ => 5, [], {} ],
+        shouldNotSatisfy: [ _ => 5, [], {}, new Boolean(true), new Number(1), new String("foo") ],
     });
 });
 
 it("isNonPrimitive", () => {
     check(isNonPrimitive, {
-        shouldSatisfy: [ _ => 5, [], {} ],
+        shouldSatisfy: [ _ => 5, [], {}, new Boolean(true), new Number(1), new String("foo") ],
         shouldNotSatisfy: [ undefined, null, true, false, 0, 1, "", "foo", Symbol() ],
     });
 });

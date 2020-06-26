@@ -12,6 +12,15 @@ export function isBoolean(x: unknown): x is boolean {
 }
 
 /**
+ * Type guard for booleans (primitive ones and objects).
+ *
+ * @param x
+ */
+export function isBooleanLike(x: unknown): x is boolean | Boolean {
+    return isBoolean(x) || is(Boolean)(x);
+}
+
+/**
  * Type guard for `number`.
  *
  * @param x
@@ -21,12 +30,30 @@ export function isNumber(x: unknown): x is number {
 }
 
 /**
+ * Type guard for numbers (primitive ones and objects).
+ *
+ * @param x
+ */
+export function isNumberLike(x: unknown): x is number | Number {
+    return isNumber(x) || is(Number)(x);
+}
+
+/**
  * Type guard for `string`.
  *
  * @param x
  */
 export function isString(x: unknown): x is string {
     return typeof x === "string";
+}
+
+/**
+ * Type guard for strings (primitive ones and objects).
+ *
+ * @param x
+ */
+export function isStringLike(x: unknown): x is string | String {
+    return isString(x) || is(String)(x);
 }
 
 /**
