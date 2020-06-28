@@ -120,6 +120,15 @@ isLike(5)(1.0); // true (because all numbers are floating point in JS)
 isLike(null)(undefined); // false
 ```
 
+The non-primitive types `Boolean`, `Number` and `String` share some, but not all, semantics with the primitive types `boolean`, `number` and `string`, respectively. The main difference lies in their equality semantics:
+
+```javascript
+           "foo"  ===            "foo" ; // true
+new String("foo") === new String("foo"); // false
+```
+
+`ts-type-guards` includes type guards for the cases when you don't care whether a value is of a primitive type or its pseudo-primitive counterpart. For example, to check if a value is either a `string` or a `String`, use `isStringLike`.
+
 
 ### Reusing Type Guards
 
